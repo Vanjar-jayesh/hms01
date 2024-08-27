@@ -2,6 +2,9 @@ package hospital.managemet.system;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.util.Date;
 
 public class Patient_Discharge extends JFrame {
@@ -30,6 +33,17 @@ public class Patient_Discharge extends JFrame {
         choice.setBounds(200,80,160,25);
         jPanel.add(choice);
 
+        try {
+            conn c = new conn();
+            ResultSet resultSet = c.statement.executeQuery("Select * from Patient_info");
+            while (resultSet.next()){
+                choice.add(resultSet.getString("Numbere"));
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         JLabel label3 = new JLabel("Room Number");
         label3.setBounds(30,130,160,20);
@@ -52,7 +66,7 @@ public class Patient_Discharge extends JFrame {
 
 
         JLabel INTime = new JLabel();
-        INTime.setBounds(200,180,160,20);
+        INTime.setBounds(200,180,250,20);
         INTime.setFont(new Font("Tahoma",Font.BOLD,14));
         INTime.setForeground(Color.white);
         jPanel.add(INTime);
@@ -66,31 +80,67 @@ public class Patient_Discharge extends JFrame {
         Date date = new Date();
 
         JLabel Outime = new JLabel(""+date);
-        Outime.setBounds(200,230,160,20);
+        Outime.setBounds(200,230,250,20);
         Outime.setFont(new Font("Tahoma",Font.BOLD,14));
         Outime.setForeground(Color.white);
         jPanel.add(Outime);
 
+        JButton jButton = new JButton("Discharge");
+        jButton.setBounds(30,300,120,30);
+        jButton.setBackground(Color.black);
+        jButton.setForeground(Color.white);
+        jPanel.add(jButton);
+        jButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                conn c = new conn();
+                try {
+                    c.statement.executeUpdate("delete from Patient_info where Numbere = '"+choice.getSelectedItem()+"' ");
+                    c.statement.executeUpdate("update Room set Avaliability = 'Avaliable' where Room_number ='"+RN.getText()+"' ");
+                    JOptionPane.showMessageDialog(null,"Done");
+                    setVisible(false);
+                }catch (Exception E){
+                    E.printStackTrace();
+                }
+            }
+        });
 
 
+        JButton jButton1 = new JButton("Check");
+        jButton1.setBounds(170,300,120,30);
+        jButton1.setBackground(Color.black);
+        jButton1.setForeground(Color.white);
+        jPanel.add(jButton1);
+        jButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                conn c = new conn();
+                try {
+                    ResultSet resultSet = c.statement.executeQuery("Select *from Patient_info where Numbere = '"+choice.getSelectedItem()+"' ");
+                    while (resultSet.next()){
+                        RN.setText(resultSet.getString("Room_number"));
+                        INTime.setText(resultSet.getString("Time"));
+                    }
+                }catch (Exception E){
+                    E.printStackTrace();
+                }
+            }
+        });
 
 
+        JButton jButton2 = new JButton("Back");
+        jButton2.setBounds(300,300,120,30);
+        jButton2.setBackground(Color.black);
+        jButton2.setForeground(Color.white);
+        jPanel.add(jButton2);
+        jButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        setUndecorated(true);
         setSize(800,400);
         setLayout(null);
         setLocation(400,250);
@@ -100,3 +150,4 @@ public class Patient_Discharge extends JFrame {
         new Patient_Discharge();
     }
 }
+
